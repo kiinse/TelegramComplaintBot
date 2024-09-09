@@ -38,8 +38,10 @@ public class ComplaintManager {
                     .text("")
                     .build();
         }
-        complaint.text = complaint.text + "\n" + text;
-        userComplaints.put(chatId, complaint);
+        if (!text.isBlank()) {
+            complaint.text = complaint.text + "\n" + text;
+            userComplaints.put(chatId, complaint);
+        }
         return complaint;
     }
 
