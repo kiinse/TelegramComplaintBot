@@ -44,7 +44,7 @@ public class SendComplaintCommand extends TelegramCommand {
                                 config.get("no_complaint", "no_complaint"),
                                 new KeyboardBuilder().getKeyboard(getKeyboardButtons()));
             } else {
-                complaintManager.sendComplaint(chatId, context.user.getUserName(), usersManager.getDistrict(chatId));
+                complaintManager.sendComplaint(chatId);
                 complaintManager.removeComplaint(chatId);
                 new MessageBuilder(client)
                         .send(context.message,

@@ -47,7 +47,7 @@ public class Bot implements LongPollingSingleThreadUpdateConsumer {
                 if (update == null) { return; }
                 val message = update.getMessage();
                 val messageText = message.getText();
-                val command = commandManager.getCommand(messageText);
+                val command = commandManager.getCommand(message);
                 val chatId = message.getChatId();
                 usersManager.createUser(chatId);
                 if (config.isDebug) {

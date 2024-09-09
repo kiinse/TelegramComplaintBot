@@ -5,6 +5,7 @@ import lombok.NonNull;
 
 @Builder
 public class Complaint {
+    public @NonNull String id;
     public @NonNull Long chatId;
     public @NonNull String username;
     public @NonNull String district;

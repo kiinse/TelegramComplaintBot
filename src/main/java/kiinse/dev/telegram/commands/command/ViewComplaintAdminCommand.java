@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -65,11 +66,12 @@ public class ViewComplaintAdminCommand extends TelegramCommand {
             new MessageBuilder(client)
                     .send(context.message,
                             complaint.asString(),
-                            new KeyboardBuilder().getKeyboard(getAdminKeyboardButtons()));
+                            new KeyboardBuilder().getKeyboard(getAdminKeyboardButtons()),
+                            complaint);
         }
     }
 
-    private List<String> getAdminKeyboardButtons() {
+    private @NonNull List<String> getAdminKeyboardButtons() {
         return List.of("Просмотреть жалобы");
     }
 }

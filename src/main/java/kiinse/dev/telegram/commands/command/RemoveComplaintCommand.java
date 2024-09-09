@@ -40,7 +40,7 @@ public class RemoveComplaintCommand extends TelegramCommand {
 
             val chatId = context.chatId;
             val complaint = complaintManager.getComplaint(context.chatId);
-            if (complaint.isBlank()) {
+            if (complaint == null || complaint.text.isBlank()) {
                 new MessageBuilder(client)
                         .send(context.message,
                                 config.get("no_complaint", "no_complaint"),

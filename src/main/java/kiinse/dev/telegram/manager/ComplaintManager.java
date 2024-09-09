@@ -3,17 +3,19 @@ package kiinse.dev.telegram.manager;
 import kiinse.dev.telegram.complaint.Complaint;
 import kiinse.dev.telegram.mongodb.queries.ComplaintQuery;
 import lombok.NonNull;
-import lombok.val;
+import org.jetbrains.annotations.Nullable;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 
 public class ComplaintManager {
 
     private final ComplaintQuery complaintQuery;
-    private final HashMap<Long, String> userComplaints = new HashMap<>();
+    private final HashMap<Long, Complaint> userComplaints = new HashMap<>();
     private DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
     public ComplaintManager(@NonNull ComplaintQuery complaintQuery) {
@@ -24,20 +26,24 @@ public class ComplaintManager {
         userComplaints.remove(chatId);
     }
 
-    public void addComplaint(long chatId, @NonNull String text) {
-        String finalText;
-        if (!userComplaints.containsKey(chatId)) {
-            finalText = text;
-        } else {
-            finalText = userComplaints.get(chatId) + "\n" + text;
+    public @NonNull Complaint addComplaint(long chatId, String username, String district, @NonNull String text) {
+        var complaint = userComplaints.get(chatId);
+        if (complaint == null) {
+            complaint = Complaint.builder()
+                    .id(UUID.randomUUID().toString() + LocalDate.now())
+                    .chatId(chatId)
+                    .username(username)
+                    .district(district)
+                    .date(LocalDate.now().format(dateFormat))
+                    .text("")
+                    .build();
         }
-        userComplaints.put(chatId, finalText);
+        complaint.text = complaint.text + "\n" + text;
+        userComplaints.put(chatId, complaint);
+        return complaint;
     }
 
-    public @NonNull String getComplaint(long chatId) {
-        if (!userComplaints.containsKey(chatId)) {
-            return "";
-        }
+    public @Nullable Complaint getComplaint(long chatId) {
         return userComplaints.get(chatId);
     }
 
@@ -45,17 +51,13 @@ public class ComplaintManager {
         if (!userComplaints.containsKey(chatId)) {
             return false;
         }
-        return !userComplaints.get(chatId).isBlank();
+        return !userComplaints.get(chatId).text.isBlank();
     }
 
-    public void sendComplaint(long chatId, @NonNull String userName, @NonNull String district) {
-        complaintQuery.createComplaint(Complaint.builder()
-                .chatId(chatId)
-                .username(userName)
-                .district(district)
-                .date(LocalDate.now().format(dateFormat))
-                .text(getComplaint(chatId))
-                .build());
+    public void sendComplaint(long chatId) {
+        if (hasComplaint(chatId)) {
+            complaintQuery.createComplaint(Objects.requireNonNull(getComplaint(chatId)));
+        }
     }
 
     public @NonNull Set<Complaint> getComplaints(@NonNull String district) {

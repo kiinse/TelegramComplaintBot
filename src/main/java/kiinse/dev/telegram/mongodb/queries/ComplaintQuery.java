@@ -26,6 +26,7 @@ public class ComplaintQuery {
 
     public void createComplaint(@NonNull Complaint complaint) {
         val query = new Document();
+        query.put("_id", complaint.id);
         query.put("chatId", String.valueOf(complaint.chatId));
         query.put("district", complaint.district);
         query.put("username", complaint.username);
@@ -61,6 +62,7 @@ public class ComplaintQuery {
 
     public @NonNull Complaint documentToComplain(@NonNull Document document) {
         return Complaint.builder()
+                .id(document.get("_id", ""))
                 .chatId(Long.parseLong(document.get("chatId", "0")))
                 .username(document.get("username", ""))
                 .district(document.get("district", ""))

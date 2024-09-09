@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
@@ -37,9 +38,9 @@ public class ViewComplaintCommand extends TelegramCommand {
             if (config.isDebug) {
                 logger.info("Executing {} to {}", this.getClass().getSimpleName(),  context.chatId);
             }
-            val chatId = context.chatId;
+            long chatId = context.chatId;
             val complaint = complaintManager.getComplaint(chatId);
-            if (complaint.isBlank()) {
+            if (complaint == null || complaint.text.isBlank()) {
                 new MessageBuilder(client)
                         .send(context.message,
                                 config.get("no_complaint", "no_complaint"),
@@ -51,7 +52,8 @@ public class ViewComplaintCommand extends TelegramCommand {
                 new MessageBuilder(client)
                         .send(context.message,
                                 "---Жалоба---\n" + complaintManager.getComplaint(chatId),
-                                new KeyboardBuilder().getKeyboard(getKeyboardButtons()));
+                                new KeyboardBuilder().getKeyboard(getKeyboardButtons()),
+                                complaint);
             }
 
         } catch (Exception e) {
@@ -59,7 +61,7 @@ public class ViewComplaintCommand extends TelegramCommand {
         }
     }
 
-    private List<String> getKeyboardButtons() {
+    private @NonNull List<String> getKeyboardButtons() {
         return Arrays.asList(
                 "Отправить жалобу",
                 "Удалить жалобу",

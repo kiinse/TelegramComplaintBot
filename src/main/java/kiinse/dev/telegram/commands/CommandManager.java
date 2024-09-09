@@ -10,6 +10,7 @@ import kiinse.dev.telegram.commands.interfaces.*;
 import lombok.NonNull;
 import lombok.val;
 import org.jetbrains.annotations.Nullable;
+import org.telegram.telegrambots.meta.api.objects.message.Message;
 
 public class CommandManager {
 
@@ -24,7 +25,8 @@ public class CommandManager {
         return true;
     }
 
-    public @Nullable TelegramCommand getCommand(@NonNull String cmd) {
+    public @Nullable TelegramCommand getCommand(@NonNull Message message) {
+        String cmd = getMessageCommand(message);
         for (val command : commands.entrySet()) {
             for (val key : command.getKey()) {
                 if ((key.toLowerCase().replace(" ", "").equals(cmd.toLowerCase().replace(" ", "")))) {
@@ -33,6 +35,19 @@ public class CommandManager {
             }
         }
         return null;
+    }
+
+    private String getMessageCommand(Message message) {
+        String command;
+        if (message.hasText()) {
+            command = message.getText();
+        } else {
+            command = message.getCaption();
+        }
+        if (command == null) {
+            command = "";
+        }
+        return command;
     }
 
     private boolean hasCommand(@NonNull TelegramCommand cmd) {

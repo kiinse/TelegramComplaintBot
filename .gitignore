@@ -28,6 +28,11 @@ bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
 
+.configs/
+.photos/
+configs/
+photos/
+
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
