@@ -39,7 +39,11 @@ public class ComplaintManager {
                     .build();
         }
         if (!text.isBlank()) {
-            complaint.text = complaint.text + "\n" + text;
+            if (complaint.text.isBlank()) {
+                complaint.text = text;
+            } else {
+                complaint.text = complaint.text + "\n" + text;
+            }
             userComplaints.put(chatId, complaint);
         }
         return complaint;
